@@ -24,6 +24,7 @@
 defined('MOODLE_INTERNAL') or die;
 
 $plugin->component = 'local_loginas';
-$plugin->version  = 2012062100;
+$plugin->version  = 2012082000;
+$plugin->release  = '1.0.0';
 $plugin->requires = 2010112400;
 $plugin->maturity = MATURITY_STABLE;
