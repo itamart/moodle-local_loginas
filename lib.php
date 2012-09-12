@@ -71,6 +71,9 @@ function local_loginas_extends_navigation(global_navigation $navigation) {
 
     $coursecontext = context_course::instance($courseid);
     if (!session_is_loggedinas() and has_capability('moodle/user:loginas', $coursecontext)) {
+        if (!isset($loginas)) {
+            $loginas = $settingsnav->add(get_string('loginas'));
+        }
         // Ajax link
         $node = $loginas->add(get_string('courseusers', 'local_loginas'), 'javascript:void();', $settingsnav::TYPE_SETTING);
         $node->add_class('local_loginas_setting_link');
@@ -147,8 +150,7 @@ function local_loginas_get_users($contextid, $search='', $searchanywhere=false, 
         $tests[] = '(' . implode(' OR ', $conditions) . ')';
     }
     $wherecondition = implode(' AND ', $tests);
-
-    $fields      = 'SELECT '.user_picture::fields('u', array('username','lastaccess'));
+    $fields      = 'SELECT DISTINCT '.user_picture::fields('u', array('username','lastaccess'));
     $countfields = 'SELECT COUNT(u.id)';
     $sql   = " FROM {user} u
                 JOIN {role_assignments} ra ON (ra.userid = u.id AND ra.contextid = :contextid)
