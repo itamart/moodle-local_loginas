@@ -24,15 +24,17 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['ajaxoneuserfound'] = '1 user found';
-$string['ajaxxusersfound'] = '{$a} users found';
 $string['ajaxnext25'] = 'Next 25 >>';
+$string['ajaxoneuserfound'] = '1 user found';
 $string['ajaxprev25'] = '<< Prev 25';
-$string['configloginasusers'] = 'A comma separated list of user ids to show in a login as menu in the settings navigation.';
-$string['configcourseusers'] = 'Enable login as users list in the course level.';
+$string['ajaxxusersfound'] = '{$a} users found';
+$string['configcourseusers'] = 'Show link to a dialogue login-as list of course users in the course level.';
+$string['configloginasusernames'] = 'A comma separated list of usernames (e.g. johndoh,janeduh) of users to show in a login as menu in the settings navigation.';
+$string['configloginasusers'] = 'A comma separated list of user ids (e.g. 101,1212) of users to show in a login as menu in the settings navigation.';
 $string['courseusers'] = 'Course users';
 $string['errajaxsearch'] = 'Error when searching users';
 $string['loginasuser'] = 'Login as user';
-$string['loginasusers'] = 'Login as users';
+$string['loginasusers'] = 'Login as users by id';
+$string['loginasusernames'] = 'Login as users by username';
 $string['pluginname'] = 'Login as';
 $string['unknowajaxaction'] = 'Unknown action requested';

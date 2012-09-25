@@ -50,11 +50,27 @@ function local_loginas_extends_navigation(global_navigation $navigation) {
         $url = new moodle_url('/admin/settings.php', array('section' => 'localsettingloginas'));
         $loginas->add(get_string('settings'), $url, $settingsnav::TYPE_SETTING);
 
-        // Users list 
+        // Users list
+        $loginasusers = array();
+        
+        // Get users by id
         if (!empty($CFG->loginas_loginasusers)) {
             $userids = explode(',', $CFG->loginas_loginasusers);
-            $loginasusers = $DB->get_records_list('user', 'id', $userids, '', 'id,firstname,lastname');
+            if ($users = $DB->get_records_list('user', 'id', $userids, '', 'id,firstname,lastname')) {
+                $loginasusers = $users;
+            }
+        }
 
+        // Get users by username
+        if (!empty($CFG->loginas_loginasusernames)) {
+            $usernames = explode(',', $CFG->loginas_loginasusernames);
+            if ($users = $DB->get_records_list('user', 'username', $usernames, '', 'id,firstname,lastname')) {
+                $loginasusers = $loginasusers + $users;
+            }
+        }
+        
+        // Add action links for specified users
+        if ($loginasusers) {
             $params = array('id' => $courseid, 'sesskey' => sesskey());
             foreach ($loginasusers as $userid => $lauser) {
                 $url = new moodle_url('/course/loginas.php', $params);
@@ -70,7 +86,7 @@ function local_loginas_extends_navigation(global_navigation $navigation) {
     }
 
     $coursecontext = context_course::instance($courseid);
-    if (!session_is_loggedinas() and has_capability('moodle/user:loginas', $coursecontext)) {
+    if ($CFG->loginas_courseusers and !session_is_loggedinas() and has_capability('moodle/user:loginas', $coursecontext)) {
         if (!isset($loginas)) {
             $loginas = $settingsnav->add(get_string('loginas'));
         }

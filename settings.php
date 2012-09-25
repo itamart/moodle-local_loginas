@@ -26,7 +26,24 @@ defined('MOODLE_INTERNAL') or die;
 if ($ADMIN->fulltree) {
     $settings = new admin_settingpage('localsettingloginas', get_string('pluginname', 'local_loginas'));
     // Admin userids list
-    $settings->add(new admin_setting_configtext('loginas_loginasusers', get_string('loginasusers', 'local_loginas'), get_string('configloginasusers', 'local_loginas'), ''));
+    $settings->add(new admin_setting_configtext(
+        'loginas_loginasusers',
+        get_string('loginasusers', 'local_loginas'),
+        get_string('configloginasusers', 'local_loginas'),
+        ''
+    ));
+    $settings->add(new admin_setting_configtext(
+        'loginas_loginasusernames',
+        get_string('loginasusernames', 'local_loginas'),
+        get_string('configloginasusernames', 'local_loginas'),
+        ''
+    ));
+    $settings->add(new admin_setting_configcheckbox(
+        'loginas_courseusers',
+        get_string('courseusers', 'local_loginas'),
+        get_string('configcourseusers', 'local_loginas'),
+        1
+    ));
     if ($settings) {
         $ADMIN->add('localplugins', $settings);
     }

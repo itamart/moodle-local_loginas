@@ -30,16 +30,18 @@ defined('MOODLE_INTERNAL') or die;
  *
  * @return bool true if success
  */
-function xmldb_loginas_uninstall() {
+function xmldb_local_loginas_uninstall() {
     global $DB;
 
     //$dbman = $DB->get_manager();
     
-    // Delete loginasusers record from config
-    $DB->delete_records('config', array('name' => 'loginas_loginasusers'));
-
-    // Delete version record from config plugins
-    $DB->delete_records('config_plugins', array('plugin' => 'local_loginas'));
+    // Delete config settings
+    $loginasconfigs = array(
+        'loginas_loginasusers',
+        'loginas_loginasusernames',
+        'loginas_courseusers'
+    );
+    $DB->delete_records_list('config', 'name', $loginasconfigs);
 
     return true;
 }
