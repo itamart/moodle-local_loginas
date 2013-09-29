@@ -86,7 +86,9 @@ function local_loginas_extends_navigation(global_navigation $navigation) {
     }
 
     $coursecontext = context_course::instance($courseid);
-    if ($CFG->loginas_courseusers and !session_is_loggedinas() and has_capability('moodle/user:loginas', $coursecontext)) {
+    $loggedinas = method_exists('\core\session\manager', 'is_loggedinas') ?
+            \core\session\manager::is_loggedinas() : session_is_loggedinas();
+    if ($CFG->loginas_courseusers and !$loggedinas and has_capability('moodle/user:loginas', $coursecontext)) {
         if (!isset($loginas)) {
             $loginas = $settingsnav->add(get_string('loginas'));
         }
