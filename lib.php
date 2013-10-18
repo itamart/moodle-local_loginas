@@ -52,11 +52,17 @@ function local_loginas_extends_navigation(global_navigation $navigation) {
 
         // Users list
         $loginasusers = array();
-        
+
+        // Since 2.6, use all the required fields (conditionally providing BC).
+        $ufields = 'id, firstname, lastname';
+        if (function_exists('get_all_user_name_fields')) {
+            $ufields = 'id, ' . get_all_user_name_fields(true);
+        }
+
         // Get users by id
         if (!empty($CFG->loginas_loginasusers)) {
             $userids = explode(',', $CFG->loginas_loginasusers);
-            if ($users = $DB->get_records_list('user', 'id', $userids, '', 'id,firstname,lastname')) {
+            if ($users = $DB->get_records_list('user', 'id', $userids, '', $ufields)) {
                 $loginasusers = $users;
             }
         }
@@ -64,7 +70,7 @@ function local_loginas_extends_navigation(global_navigation $navigation) {
         // Get users by username
         if (!empty($CFG->loginas_loginasusernames)) {
             $usernames = explode(',', $CFG->loginas_loginasusernames);
-            if ($users = $DB->get_records_list('user', 'username', $usernames, '', 'id,firstname,lastname')) {
+            if ($users = $DB->get_records_list('user', 'username', $usernames, '', $ufields)) {
                 $loginasusers = $loginasusers + $users;
             }
         }
