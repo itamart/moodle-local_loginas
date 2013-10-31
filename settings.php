@@ -17,7 +17,7 @@
 /**
  * @package    local
  * @subpackage loginas
- * @copyright 2012 Itamar Tzadok
+ * @copyright  2013 Itamar Tzadok {@link http://substantialmethods.com}
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

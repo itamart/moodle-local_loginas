@@ -1,10 +1,13 @@
 moodle-local_loginas
 ====================
-A local plugin that allows admin to add a list of loginas action links to the settings block
+A local plugin that adds a 'Login as' quick menu to the administration block.
+By configuration settings the menu can display:
+- admin restricted login-as links to particular users specified by id or username.
+- link to ajaxed course users login-as links.
 
 Version
 -------
-1.2.0 (2012092400)
+1.3.0 (2013103100)
 
 Requires:
 --------
@@ -25,6 +28,11 @@ the MoodleDocs wiki.
 
 Changelog:
 ----------
+V 1.3.0
+- Added: Group filtered course level users list. 
+ If course group mode is visible or separate, users who in the course level
+ can login as (moodle/user:loginas) but not access all groups (moodle/site:accessallgroups)
+ will be able to see in the Course users list only members in their groups. 
 V 1.2.0
 - Added: config settings for admin list of loginas users by usernames
 - Added: config list for showing/hiding the coruse level loginas users list.

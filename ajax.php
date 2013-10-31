@@ -19,7 +19,7 @@
  *
  * @package    local
  * @subpackage loginas
- * @copyright  2012 Itamar Tzadok
+ * @copyright  2013 Itamar Tzadok {@link http://substantialmethods.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -58,7 +58,7 @@ switch ($action) {
         $outcome->response = local_loginas_get_users($context->id, $search, true, $page);
         $extrafields = get_extra_user_fields($context);
         foreach ($outcome->response['users'] as $key => &$user) {
-             $user->picture = $OUTPUT->user_picture($user);
+            $user->picture = $OUTPUT->user_picture($user);
             $user->fullname = fullname($user);
             $fieldvalues = array();
             foreach ($extrafields as $field) {

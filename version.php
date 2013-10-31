@@ -17,14 +17,14 @@
 /**
  * @package    local
  * @subpackage loginas
- * @copyright 2012 Itamar Tzadok
+ * @copyright  2013 Itamar Tzadok {@link http://substantialmethods.com}
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') or die;
 
 $plugin->component = 'local_loginas';
-$plugin->version  = 2012092400;
-$plugin->release  = '1.2.0';
+$plugin->version  = 2013103100;
+$plugin->release  = '1.3.0';
 $plugin->requires = 2010112400;
 $plugin->maturity = MATURITY_STABLE;

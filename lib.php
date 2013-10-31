@@ -17,7 +17,7 @@
 /**
  * @package    local
  * @subpackage loginas
- * @copyright 2012 Itamar Tzadok
+ * @copyright  2013 Itamar Tzadok {@link http://substantialmethods.com}
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -140,7 +140,7 @@ function local_loginas_require_js($page) {
  * @return array
  */
 function local_loginas_get_users($contextid, $search='', $searchanywhere=false, $page=0, $perpage=25) {
-    global $DB, $CFG, $USER;
+    global $DB, $CFG, $USER, $COURSE;
 
     // Add some additional sensible conditions
     $tests = array(
@@ -153,11 +153,12 @@ function local_loginas_get_users($contextid, $search='', $searchanywhere=false, 
         'guestid'=>$CFG->siteguest,
         'cuserid'=>$USER->id,
     );
-    // Add not admin test
+    // Add not admin condition
     list($notinids, $aparams) = $DB->get_in_or_equal(explode(',', $CFG->siteadmins), SQL_PARAMS_NAMED, 'admin', false);
     $tests[] = "u.id $notinids";
     $params = array_merge($params, $aparams);
     
+    // Search condition
     if (!empty($search)) {
         $conditions = array('u.firstname','u.lastname');
         if ($searchanywhere) {
@@ -173,17 +174,44 @@ function local_loginas_get_users($contextid, $search='', $searchanywhere=false, 
         }
         $tests[] = '(' . implode(' OR ', $conditions) . ')';
     }
+    
+    // Groups condition
+    $joingroupmembers = '';
+    $context  = context_course::instance($COURSE->id);
+    if (groups_get_course_groupmode($COURSE) != NOGROUPS and !has_capability('moodle/site:accessallgroups', $context)) {
+        // User course groups
+        $groups = groups_get_user_groups($COURSE->id);
+        $groupids = reset($groups);
+        
+        // No groups, no users to login as 
+        if (empty($groupids)) {
+            return array('totalusers' => 0, 'users' => array());
+        }
+        
+        // Some groups, add condition
+        $joingroupmembers = " JOIN {groups_members} gm ON gm.userid = u.id ";
+        list($ingroupids, $gparams) = $DB->get_in_or_equal($groupids, SQL_PARAMS_NAMED, 'group');
+        $tests[] = "gm.groupid $ingroupids";
+        $params = array_merge($params, $gparams);
+    }
+
+    // Get the users
     $wherecondition = implode(' AND ', $tests);
     $fields      = 'SELECT DISTINCT '.user_picture::fields('u', array('username','lastaccess'));
     $countfields = 'SELECT COUNT(u.id)';
-    $sql   = " FROM {user} u
+    $sql   = " 
+            FROM
+                {user} u
                 JOIN {role_assignments} ra ON (ra.userid = u.id AND ra.contextid = :contextid)
-              WHERE $wherecondition ";
+                $joingroupmembers
+            WHERE 
+                $wherecondition 
+    ";
     $order = ' ORDER BY lastname ASC, firstname ASC';
 
     $params['contextid'] = $contextid;
     $totalusers = $DB->count_records_sql($countfields . $sql, $params);
     $availableusers = $DB->get_records_sql($fields . $sql . $order, $params, $page*$perpage, $perpage);
-    return array('totalusers'=>$totalusers, 'users'=>$availableusers);
+    return array('totalusers' => $totalusers, 'users' => $availableusers);
 }
 
