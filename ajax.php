@@ -15,10 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file generates AJAX list of login as links of course users
+ * This file generates AJAX list of login as links of course users.
  *
- * @package    local
- * @subpackage loginas
+ * @package    local_loginas
  * @copyright  2013 Itamar Tzadok {@link http://substantialmethods.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,12 +27,12 @@ define('AJAX_SCRIPT', true);
 require('../../config.php');
 require_once("$CFG->dirroot/local/loginas/lib.php");
 
-$id      = required_param('id', PARAM_INT); // course id
+$id      = required_param('id', PARAM_INT); // Course id.
 $action  = required_param('action', PARAM_ACTION);
 
-$PAGE->set_url(new moodle_url('/loginas/ajax.php', array('id'=>$id, 'action'=>$action)));
+$PAGE->set_url(new moodle_url('/loginas/ajax.php', array('id' => $id, 'action' => $action)));
 
-$course = $DB->get_record('course', array('id'=>$id), '*', MUST_EXIST);
+$course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
 $context = context_course::instance($course->id, MUST_EXIST);
 
 if ($course->id == SITEID) {
@@ -44,7 +43,8 @@ require_login($course);
 require_capability('moodle/user:loginas', $context);
 require_sesskey();
 
-echo $OUTPUT->header(); // send headers
+// Send headers.
+echo $OUTPUT->header();
 
 $outcome = new stdClass;
 $outcome->success = true;

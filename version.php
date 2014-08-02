@@ -1,5 +1,5 @@
 <?php
-// This file is part of Moodle - http://moodle.org/.
+// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,19 +12,18 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
- 
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
- * @package    local
- * @subpackage loginas
- * @copyright  2013 Itamar Tzadok {@link http://substantialmethods.com}
+ * @package    local_loginas
+ * @copyright  2014 Itamar Tzadok {@link http://substantialmethods.com}
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') or die;
 
 $plugin->component = 'local_loginas';
-$plugin->version  = 2013103100;
-$plugin->release  = '1.3.0';
-$plugin->requires = 2010112400;
+$plugin->release = '2.7.0';
+$plugin->version = 2014080100;
+$plugin->requires = 2014051200;
 $plugin->maturity = MATURITY_STABLE;
