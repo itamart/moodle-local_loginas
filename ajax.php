@@ -17,9 +17,9 @@
 /**
  * This file generates AJAX list of login as links of course users.
  *
- * @package    local_loginas
- * @copyright  2013 Itamar Tzadok {@link http://substantialmethods.com}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package local_loginas
+ * @copyright 2015 Itamar Tzadok {@link http://substantialmethods.com}
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 define('AJAX_SCRIPT', true);
@@ -34,10 +34,6 @@ $PAGE->set_url(new moodle_url('/loginas/ajax.php', array('id' => $id, 'action' =
 
 $course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
 $context = context_course::instance($course->id, MUST_EXIST);
-
-if ($course->id == SITEID) {
-    throw new moodle_exception('invalidcourse');
-}
 
 require_login($course);
 require_capability('moodle/user:loginas', $context);
@@ -56,16 +52,18 @@ switch ($action) {
         $search  = optional_param('search', '', PARAM_RAW);
         $page = optional_param('page', 0, PARAM_INT);
         $outcome->response = local_loginas_get_users($context->id, $search, true, $page);
-        $extrafields = get_extra_user_fields($context);
-        foreach ($outcome->response['users'] as $key => &$user) {
-            $user->picture = $OUTPUT->user_picture($user);
-            $user->fullname = fullname($user);
-            $fieldvalues = array();
-            foreach ($extrafields as $field) {
-                $fieldvalues[] = s($user->{$field});
-                unset($user->{$field});
+        if ($outcome->response['users']) {
+            $extrafields = get_extra_user_fields($context);
+            foreach ($outcome->response['users'] as $key => &$user) {
+                $user->picture = $OUTPUT->user_picture($user);
+                $user->fullname = fullname($user);
+                $fieldvalues = array();
+                foreach ($extrafields as $field) {
+                    $fieldvalues[] = s($user->{$field});
+                    unset($user->{$field});
+                }
+                $user->extrafields = implode(', ', $fieldvalues);
             }
-            $user->extrafields = implode(', ', $fieldvalues);
         }
         $outcome->success = true;
         break;

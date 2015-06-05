@@ -17,9 +17,9 @@
 /**
  * Language strings.
  *
- * @package    local_loginas
- * @copyright  2013 Itamar Tzadok {@link http://substantialmethods.com}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package local_loginas
+ * @copyright 2015 Itamar Tzadok {@link http://substantialmethods.com}
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 $string['ajaxnext25'] = 'Next 25 >>';

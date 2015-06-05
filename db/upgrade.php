@@ -15,29 +15,36 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    local_loginas
- * @copyright  2013 Itamar Tzadok {@link http://substantialmethods.com}
+ * @package local_loginas
+ * @copyright 2015 Itamar Tzadok {@link http://substantialmethods.com}
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') or die;
+defined('MOODLE_INTERNAL') || die();
 
-/**
- * This is called at the beginning of the uninstallation process to give the module
- * a chance to clean-up its hacks, bits etc. where possible.
- *
- * @return bool true if success
- */
-function xmldb_local_loginas_uninstall() {
+function xmldb_local_loginas_upgrade($oldversion) {
     global $DB;
 
-    // Delete config settings.
-    $loginasconfigs = array(
-        'loginas_loginasusers',
-        'loginas_loginasusernames',
-        'loginas_courseusers'
-    );
-    $DB->delete_records_list('config', 'name', $loginasconfigs);
+    $dbman = $DB->get_manager();
+
+    $newversion = 2014111000;
+    if ($oldversion < $newversion) {
+        // Move config settings from core to plugin.
+        $loginasconfigs = array(
+            'loginasusers',
+            'loginasusernames',
+            'courseusers'
+        );
+
+        foreach ($loginasconfigs as $config) {
+            if ($setting = get_config('core', "loginas_$config")) {
+                set_config($config, $setting, 'local_loginas');
+                unset_config("loginas_$config");
+            }
+        }
+
+        upgrade_plugin_savepoint(true, $newversion, 'local', 'loginas');
+    }
 
     return true;
 }

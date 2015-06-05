@@ -15,30 +15,30 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    local_loginas
- * @copyright  2013 Itamar Tzadok {@link http://substantialmethods.com}
+ * @package local_loginas
+ * @copyright 2015 Itamar Tzadok {@link http://substantialmethods.com}
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') or die;
 
-if ($ADMIN->fulltree) {
+if ($hassiteconfig) {
     $settings = new admin_settingpage('localsettingloginas', get_string('pluginname', 'local_loginas'));
     // Admin userids list.
     $settings->add(new admin_setting_configtext(
-        'loginas_loginasusers',
+        'local_loginas/loginasusers',
         new lang_string('loginasusers', 'local_loginas'),
         new lang_string('configloginasusers', 'local_loginas'),
         ''
     ));
     $settings->add(new admin_setting_configtext(
-        'loginas_loginasusernames',
+        'local_loginas/loginasusernames',
         get_string('loginasusernames', 'local_loginas'),
         get_string('configloginasusernames', 'local_loginas'),
         ''
     ));
     $settings->add(new admin_setting_configcheckbox(
-        'loginas_courseusers',
+        'local_loginas/courseusers',
         new lang_string('courseusers', 'local_loginas'),
         new lang_string('configcourseusers', 'local_loginas'),
         '1'

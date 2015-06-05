@@ -15,15 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    local_loginas
- * @copyright  2014 Itamar Tzadok {@link http://substantialmethods.com}
+ * @package local_loginas
+ * @copyright 2015 Itamar Tzadok {@link http://substantialmethods.com}
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') or die;
 
 $plugin->component = 'local_loginas';
-$plugin->release = '2.7.0';
-$plugin->version = 2014080100;
-$plugin->requires = 2014051200;
+$plugin->release = '2.8.0';
+$plugin->version = 2014111000;
+$plugin->requires = 2014111000;
 $plugin->maturity = MATURITY_STABLE;

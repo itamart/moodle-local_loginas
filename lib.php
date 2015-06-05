@@ -15,8 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    local_loginas
- * @copyright  2013 Itamar Tzadok {@link http://substantialmethods.com}
+ * @package local_loginas
+ * @copyright 2015 Itamar Tzadok {@link http://substantialmethods.com}
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,17 +29,22 @@ defined('MOODLE_INTERNAL') or die;
  * @param stdClass $context The node context
  */
 function local_loginas_extends_settings_navigation(settings_navigation $settings, $context) {
-    global $DB, $CFG, $PAGE, $USER, $OUTPUT;
+    global $DB, $CFG, $PAGE, $USER;
 
-    if (empty($PAGE->course->id)) {
+    // Course id and context.
+    $courseid = !empty($PAGE->course->id) ? $PAGE->course->id : SITEID;
+    $coursecontext = context_course::instance($courseid);
+
+    // Must have the loginas capability.
+    if (!has_capability('moodle/user:loginas', $coursecontext)) {
         return;
     }
 
-    $courseid = $PAGE->course->id;
+    // Set the settings category.
+    $loginas = $settings->add(get_string('loginas'));
 
     // Login as list by admin setting.
     if (is_siteadmin($USER)) {
-        $loginas = $settings->add(get_string('loginas'));
 
         // Admin settings page.
         $url = new moodle_url('/admin/settings.php', array('section' => 'localsettingloginas'));
@@ -48,23 +53,20 @@ function local_loginas_extends_settings_navigation(settings_navigation $settings
         // Users list.
         $loginasusers = array();
 
-        // Since 2.6, use all the required fields (conditionally providing BC).
-        $ufields = 'id, firstname, lastname';
-        if (function_exists('get_all_user_name_fields')) {
-            $ufields = 'id, ' . get_all_user_name_fields(true);
-        }
+        // Since 2.6, use all the required fields.
+        $ufields = 'id, ' . get_all_user_name_fields(true);
 
         // Get users by id.
-        if (!empty($CFG->loginas_loginasusers)) {
-            $userids = explode(',', $CFG->loginas_loginasusers);
+        if ($configuserids = get_config('local_loginas', 'loginasusers')) {
+            $userids = explode(',', $configuserids);
             if ($users = $DB->get_records_list('user', 'id', $userids, '', $ufields)) {
                 $loginasusers = $users;
             }
         }
 
         // Get users by username.
-        if (!empty($CFG->loginas_loginasusernames)) {
-            $usernames = explode(',', $CFG->loginas_loginasusernames);
+        if ($configusernames = get_config('local_loginas', 'loginasusernames')) {
+            $usernames = explode(',', $configusernames);
             if ($users = $DB->get_records_list('user', 'username', $usernames, '', $ufields)) {
                 $loginasusers = $loginasusers + $users;
             }
@@ -81,18 +83,13 @@ function local_loginas_extends_settings_navigation(settings_navigation $settings
         }
     }
 
-    // Course login as not on front page.
-    if ($courseid == SITEID) {
+    // Course users login as.
+    if (!$configcourseusers = get_config('local_loginas', 'courseusers')) {
         return;
     }
 
-    $coursecontext = context_course::instance($courseid);
-    $loggedinas = method_exists('\core\session\manager', 'is_loggedinas') ?
-            \core\session\manager::is_loggedinas() : session_is_loggedinas();
-    if ($CFG->loginas_courseusers and !$loggedinas and has_capability('moodle/user:loginas', $coursecontext)) {
-        if (!isset($loginas)) {
-            $loginas = $settings->add(get_string('loginas'));
-        }
+    $loggedinas = \core\session\manager::is_loggedinas();
+    if (!$loggedinas) {
         // Ajax link.
         $node = $loginas->add(get_string('courseusers', 'local_loginas'), 'javascript:void();', $settings::TYPE_SETTING);
         $node->add_class('local_loginas_setting_link');
@@ -107,9 +104,9 @@ function local_loginas_extends_settings_navigation(settings_navigation $settings
 function local_loginas_require_js($page) {
     $modules = array('moodle-local_loginas-quickloginas', 'moodle-local_loginas-quickloginas-skin');
     $arguments = array(
-        'courseid'            => $page->course->id,
-        'ajaxurl'             => '/local/loginas/ajax.php',
-        'url'                 => $page->url->out(false),
+        'courseid' => $page->course->id,
+        'ajaxurl' => '/local/loginas/ajax.php',
+        'url' => $page->url->out(false),
     );
 
     $function = 'M.local_loginas.quickloginas.init';
@@ -148,8 +145,10 @@ function local_loginas_get_users($contextid, $search='', $searchanywhere=false, 
         'guestid' => $CFG->siteguest,
         'cuserid' => $USER->id,
     );
-    // Add not admin condition.
-    list($notinids, $aparams) = $DB->get_in_or_equal(explode(',', $CFG->siteadmins), SQL_PARAMS_NAMED, 'admin', false);
+
+    // Omit admin condition.
+    $admins = explode(',', $CFG->siteadmins);
+    list($notinids, $aparams) = $DB->get_in_or_equal($admins, SQL_PARAMS_NAMED, 'admin', false);
     $tests[] = "u.id $notinids";
     $params = array_merge($params, $aparams);
 
@@ -190,6 +189,12 @@ function local_loginas_get_users($contextid, $search='', $searchanywhere=false, 
         $params = array_merge($params, $gparams);
     }
 
+    // Require enrollment if not on front page.
+    $joinroleassignments = '';
+    if ($COURSE->id != SITEID) {
+        $joinroleassignments = 'JOIN {role_assignments} ra ON (ra.userid = u.id AND ra.contextid = :contextid)';
+    }
+
     // Get the users.
     $wherecondition = implode(' AND ', $tests);
     $fields = 'SELECT DISTINCT '. user_picture::fields('u', array('username', 'lastaccess'));
@@ -197,7 +202,7 @@ function local_loginas_get_users($contextid, $search='', $searchanywhere=false, 
     $sql   = "
         FROM
             {user} u
-            JOIN {role_assignments} ra ON (ra.userid = u.id AND ra.contextid = :contextid)
+            $joinroleassignments
             $joingroupmembers
         WHERE
             $wherecondition
@@ -205,7 +210,12 @@ function local_loginas_get_users($contextid, $search='', $searchanywhere=false, 
     $order = ' ORDER BY lastname ASC, firstname ASC';
 
     $params['contextid'] = $contextid;
-    $totalusers = $DB->count_records_sql($countfields . $sql, $params);
-    $availableusers = $DB->get_records_sql($fields. $sql. $order, $params, $page * $perpage, $perpage);
+
+    if ($totalusers = $DB->count_records_sql($countfields . $sql, $params)) {
+        $availableusers = $DB->get_records_sql($fields. $sql. $order, $params, $page * $perpage, $perpage);
+    } else {
+        $availableusers = null;
+    }
+
     return array('totalusers' => $totalusers, 'users' => $availableusers);
 }
