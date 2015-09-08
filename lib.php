@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') or die;
  * @param settings_navigation $settings The settings navigation object
  * @param stdClass $context The node context
  */
-function local_loginas_extends_settings_navigation(settings_navigation $settings, $context) {
+function local_loginas_extend_settings_navigation(settings_navigation $settings, $context) {
     global $DB, $CFG, $PAGE, $USER;
 
     // Course id and context.
