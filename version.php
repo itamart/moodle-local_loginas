@@ -16,14 +16,14 @@
 
 /**
  * @package local_loginas
- * @copyright 2015 Itamar Tzadok {@link http://substantialmethods.com}
+ * @copyright 2017 Itamar Tzadok {@link http://substantialmethods.com}
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') or die;
 
 $plugin->component = 'local_loginas';
-$plugin->release = '2.9.0';
-$plugin->version = 2015051100;
-$plugin->requires = 2015051100;
+$plugin->release = '3.1.4';
+$plugin->version = 2016052304;
+$plugin->requires = 2016052300;
 $plugin->maturity = MATURITY_STABLE;
